@@ -23,6 +23,7 @@ namespace PhpCodeQuality\DoctrineValidation\Command;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\JoinColumn;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -175,6 +176,16 @@ class ValidateDoctrineEntityColumnNames extends Command
             $this->output->writeln('       * Validating property ' . $property->getName());
         }
 
+        $this->validateColumn($exitCode, $property);
+        $this->validateJoinColumn($exitCode, $property);
+    }
+
+    /**
+     * @param                     $exitCode
+     * @param \ReflectionProperty $property
+     */
+    private function validateColumn(&$exitCode, \ReflectionProperty $property)
+    {
         /** @var Column $column */
         $column = $this->annotationReader->getPropertyAnnotation($property, 'Doctrine\\ORM\\Mapping\\Column');
 
@@ -215,6 +226,35 @@ class ValidateDoctrineEntityColumnNames extends Command
                     $property->getDeclaringClass()->getName(),
                     $property->getName(),
                     implode(', ', self::$KEY_WORDS[$keyWord])
+                )
+            );
+            $exitCode = 1;
+        }
+    }
+
+    /**
+     * @param                     $exitCode
+     * @param \ReflectionProperty $property
+     */
+    private function validateJoinColumn(&$exitCode, \ReflectionProperty $property)
+    {
+
+        /** @var JoinColumn $joinColumn */
+        $joinColumn = $this->annotationReader->getPropertyAnnotation($property, 'Doctrine\\ORM\\Mapping\\JoinColumn');
+
+        if (is_null($joinColumn) || !$joinColumn->name) {
+            return;
+        }
+
+        $isQuoted = '`' === $joinColumn->name[0];
+
+        if ($isQuoted) {
+            $this->output->writeln(
+                sprintf(
+                    '<error>The properties %s:$%s join column name is quoted, but join columns must not be quoted!</error>',
+                    $property->getDeclaringClass()->getName(),
+                    $property->getName(),
+                    $joinColumn->name
                 )
             );
             $exitCode = 1;
