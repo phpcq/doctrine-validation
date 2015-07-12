@@ -182,7 +182,7 @@ class ValidateDoctrineEntityColumnNames extends Command
             return;
         }
 
-        $currentColumnName  = $column->name ?: $property->getName();
+        $currentColumnName  = $column->name ? trim($column->name, '`') : $property->getName();
         $expectedColumnName = $this->determineExpectedColumnName($currentColumnName);
 
         if ($currentColumnName != $expectedColumnName) {
