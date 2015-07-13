@@ -197,7 +197,7 @@ class ValidateDoctrineEntityColumnNames extends Command
             $isQuoted          = '`' === $column->name[0];
             $currentColumnName = trim($column->name, '`');
         } else {
-            $isQuoted          = true;
+            $isQuoted          = false;
             $currentColumnName = $property->getName();
         }
 
