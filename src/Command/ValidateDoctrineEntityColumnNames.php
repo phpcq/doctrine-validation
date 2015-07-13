@@ -221,7 +221,8 @@ class ValidateDoctrineEntityColumnNames extends Command
         if (isset(self::$KEY_WORDS[$keyWord]) && !$isQuoted) {
             $this->output->writeln(
                 sprintf(
-                    '<error>The column name %s (%s:$%s) is a reserved keyword in (%s) and must be quoted or renamed!</error>',
+                    '<error>The column name %s (%s:$%s) is a reserved keyword in (%s) ' .
+                    'and must be quoted or renamed!</error>',
                     $keyWord,
                     $property->getDeclaringClass()->getName(),
                     $property->getName(),
@@ -251,7 +252,8 @@ class ValidateDoctrineEntityColumnNames extends Command
         if ($isQuoted) {
             $this->output->writeln(
                 sprintf(
-                    '<error>The properties %s:$%s join column name is quoted, but join columns must not be quoted!</error>',
+                    '<error>The properties %s:$%s join column name is quoted, ' .
+                    'but join columns must not be quoted!</error>',
                     $property->getDeclaringClass()->getName(),
                     $property->getName(),
                     $joinColumn->name
